@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pigment — AI Prompt</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@500&family=IBM+Plex+Serif:wght@500&display=swap"
+    rel="stylesheet">
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #e9ecef;
+      --card-bg: #f8f9fa;
+      --card-border: #d9d9d9;
+      --muted: #6c757d;
+      --dark: #1e1e1e;
+      --black: #000;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--bg);
+      min-height: 100vh;
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px 24px 80px;
+    }
+
+    /* ── Header ───────────────────────────────────────────── */
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+
+    .logo-icon {
+      width: 113px;
+      height: auto;
+      display: block;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: 'IBM Plex Serif', Georgia, serif;
+      font-weight: 500;
+      font-style: normal;
+      font-size: 32px;
+      color: var(--black);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+
+    /* ── Main content ─────────────────────────────────────── */
+    .content {
+      width: 100%;
+      max-width: 1054px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 19px;
+    }
+
+    .subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: -0.03em;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* ── Prompt card ──────────────────────────────────────── */
+    .prompt-card {
+      position: relative;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0px 2px 20px 0px rgba(31, 31, 31, 0.04);
+    }
+
+    .prompt-text {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: -0.03em;
+      line-height: 1.65;
+      white-space: normal;
+      /* Room for the absolutely-positioned copy button (36px height + 9px offset + 8px gap) */
+      padding-bottom: 53px;
+    }
+
+    /* ── Copy button ──────────────────────────────────────── */
+    .copy-btn {
+      position: absolute;
+      bottom: 9px;
+      right: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 36px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: linear-gradient(180deg, #212529 0%, #14100C 100%);
+      box-shadow:
+        0px 2px 4px -1px rgba(12, 10, 8, 0.50),
+        0px 0px 0px 1px rgba(12, 10, 8, 0.10),
+        inset 0px -1px 1.2px 0.35px #0C0A09,
+        inset 0px 0.5px 1px 0px rgba(254, 252, 251, 0.20);
+      transition: background 0.15s ease;
+      outline: none;
+    }
+
+    .copy-btn:hover {
+      background:
+        linear-gradient(rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.10)),
+        linear-gradient(180deg, #212529 0%, #14100C 100%);
+    }
+
+    .copy-btn:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, 0.4);
+      outline-offset: 2px;
+    }
+
+    .copy-btn-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #FEFCFB;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .icon-copy,
+    .icon-check {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+    }
+
+    .icon-copy {
+      display: block;
+    }
+
+    .icon-check {
+      display: none;
+    }
+
+    .copy-btn.done .icon-copy {
+      display: none;
+    }
+
+    .copy-btn.done .icon-check {
+      display: block;
+    }
+
+    /* ── Footer ───────────────────────────────────────────── */
+    .footer {
+      margin-top: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .footer-text {
+      font-family: 'IBM Plex Serif', Georgia, serif;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--dark);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+    }
+
+    .eye-logo {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+      box-shadow:
+        0px 14.6px 4.1px 0px rgba(0, 0, 0, 0.01),
+        0px 9.4px 3.7px 0px rgba(0, 0, 0, 0.05),
+        0px 5.3px 3.2px 0px rgba(0, 0, 0, 0.17),
+        0px 2.3px 2.3px 0px rgba(0, 0, 0, 0.29),
+        0px 0.6px 1.3px 0px rgba(0, 0, 0, 0.34);
+    }
+
+    .footer-handle {
+      font-family: 'Geist Mono', 'SF Mono', 'Menlo', 'Consolas', monospace;
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--dark);
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+    }
+
+    /* ── Responsive — Tablet ──────────────────────────────── */
+    @media (max-width: 1024px) {
+      body {
+        padding-top: 80px;
+      }
+
+      .header {
+        margin-bottom: 48px;
+      }
+
+      .prompt-text {
+        font-size: 16px;
+        padding-bottom: 50px;
+      }
+
+      .copy-btn {
+        height: 34px;
+        padding: 9px 18px;
+      }
+
+      .copy-btn-label {
+        font-size: 13px;
+      }
+
+      .icon-copy,
+      .icon-check {
+        width: 14px;
+        height: 14px;
+      }
+    }
+
+    /* ── Responsive — Mobile ──────────────────────────────── */
+    @media (max-width: 640px) {
+      body {
+        padding: 56px 16px 64px;
+      }
+
+      .header {
+        gap: 14px;
+        margin-bottom: 36px;
+      }
+
+      .logo-icon {
+        width: 76px;
+      }
+
+      .logo-text {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        font-size: 14px;
+      }
+
+      .prompt-card {
+        padding: 20px;
+      }
+
+      .prompt-text {
+        font-size: 14px;
+        padding-bottom: 46px;
+      }
+
+      .copy-btn {
+        height: 32px;
+        padding: 8px 14px;
+        gap: 4px;
+      }
+
+      .copy-btn-label {
+        font-size: 12px;
+      }
+
+      .icon-copy,
+      .icon-check {
+        width: 12px;
+        height: 12px;
+      }
+
+      .footer {
+        margin-top: 48px;
+        gap: 10px;
+      }
+
+      .footer-text {
+        font-size: 15px;
+      }
+
+      .footer-handle {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <header class="header">
+    <svg class="logo-icon" width="113" height="111" viewBox="0 0 132 130" fill="none" xmlns="http://www.w3.org/2000/svg"
+      aria-label="Pigment">
+      <g filter="url(#filter0_di_53_246)">
+        <path
+          d="M45.0708 30.7844C45.0708 37.6944 39.4692 43.296 32.5592 43.296C25.6493 43.296 20.0477 37.6944 20.0477 30.7844C20.0477 23.8745 25.6493 18.2729 32.5592 18.2729C39.4692 18.2729 45.0708 23.8745 45.0708 30.7844Z"
+          fill="#1E1E1E" />
+        <path
+          d="M45.0708 30.7844C45.0708 23.8745 39.4692 18.2729 32.5592 18.2729C25.6493 18.2729 20.0477 23.8745 20.0477 30.7844C20.0477 37.6944 25.6493 43.296 32.5592 43.296C39.4692 43.296 45.0708 37.6944 45.0708 30.7844ZM47.5725 30.7844C47.5725 39.0764 40.8512 45.7977 32.5592 45.7977C24.2673 45.7977 17.546 39.0764 17.546 30.7844C17.546 22.4925 24.2673 15.7712 32.5592 15.7712C40.8512 15.7712 47.5725 22.4925 47.5725 30.7844Z"
+          fill="white" />
+        <path
+          d="M116.437 43.296C116.437 50.206 110.836 55.8076 103.926 55.8076C97.0156 55.8076 91.414 50.206 91.414 43.296C91.414 36.3861 97.0156 30.7844 103.926 30.7844C110.836 30.7844 116.437 36.3861 116.437 43.296Z"
+          fill="#A06CD5" />
+        <path
+          d="M116.437 43.296C116.437 36.3861 110.836 30.7844 103.926 30.7844C97.0156 30.7844 91.414 36.3861 91.414 43.296C91.414 50.206 97.0156 55.8076 103.926 55.8076C110.836 55.8076 116.437 50.206 116.437 43.296ZM118.939 43.296C118.939 51.588 112.218 58.3093 103.926 58.3093C95.6337 58.3093 88.9123 51.588 88.9123 43.296C88.9123 35.0041 95.6337 28.2827 103.926 28.2827C112.218 28.2827 118.939 35.0041 118.939 43.296Z"
+          fill="white" />
+        <path
+          d="M61.5797 105.531C61.5797 112.441 55.9781 118.043 49.0681 118.043C42.1582 118.043 36.5566 112.441 36.5566 105.531C36.5566 98.6213 42.1582 93.0197 49.0681 93.0197C55.9781 93.0197 61.5797 98.6213 61.5797 105.531Z"
+          fill="#ED383F" />
+        <path
+          d="M61.5797 105.531C61.5797 98.6213 55.9781 93.0197 49.0681 93.0197C42.1582 93.0197 36.5566 98.6213 36.5566 105.531C36.5566 112.441 42.1582 118.043 49.0681 118.043C55.9781 118.043 61.5797 112.441 61.5797 105.531ZM64.0814 105.531C64.0814 113.823 57.3601 120.545 49.0681 120.545C40.7762 120.545 34.0548 113.823 34.0548 105.531C34.0548 97.2393 40.7762 90.518 49.0681 90.518C57.3601 90.518 64.0814 97.2393 64.0814 105.531Z"
+          fill="white" />
+        <path
+          d="M87.0099 37.0402C87.0099 47.4052 78.6074 55.8076 68.2425 55.8076C57.8776 55.8076 49.4752 47.4052 49.4752 37.0402C49.4752 26.6753 57.8776 18.2729 68.2425 18.2729C78.6074 18.2729 87.0099 26.6753 87.0099 37.0402Z"
+          fill="#7CB518" />
+        <path
+          d="M87.0099 37.0402C87.0099 26.6753 78.6074 18.2729 68.2425 18.2729C57.8776 18.2729 49.4752 26.6753 49.4752 37.0402C49.4752 47.4052 57.8776 55.8076 68.2425 55.8076C78.6074 55.8076 87.0099 47.4052 87.0099 37.0402ZM89.5116 37.0402C89.5116 48.7872 79.9894 58.3093 68.2425 58.3093C56.4956 58.3093 46.9734 48.7872 46.9734 37.0402C46.9734 25.2933 56.4956 15.7712 68.2425 15.7712C79.9894 15.7712 89.5116 25.2933 89.5116 37.0402Z"
+          fill="white" />
+        <path
+          d="M115.161 83.9586C115.161 99.506 102.557 112.11 87.0099 112.11C71.4625 112.11 58.8588 99.506 58.8588 83.9586C58.8588 68.4113 71.4625 55.8076 87.0099 55.8076C102.557 55.8076 115.161 68.4113 115.161 83.9586Z"
+          fill="#1E96FC" />
+        <path
+          d="M115.161 83.9586C115.161 68.4113 102.557 55.8076 87.0099 55.8076C71.4625 55.8076 58.8588 68.4113 58.8588 83.9586C58.8588 99.506 71.4625 112.11 87.0099 112.11C102.557 112.11 115.161 99.506 115.161 83.9586ZM117.663 83.9586C117.663 100.888 103.939 114.611 87.0099 114.611C70.0805 114.611 56.3571 100.888 56.3571 83.9586C56.3571 67.0293 70.0805 53.3059 87.0099 53.3059C103.939 53.3059 117.663 67.0293 117.663 83.9586Z"
+          fill="white" />
+        <path
+          d="M58.4518 69.1611C58.4518 81.2535 48.649 91.0564 36.5566 91.0564C24.4641 91.0564 14.6613 81.2535 14.6613 69.1611C14.6613 57.0687 24.4641 47.2658 36.5566 47.2658C48.649 47.2658 58.4518 57.0687 58.4518 69.1611Z"
+          fill="#FE7B02" />
+        <path
+          d="M58.4518 69.1611C58.4518 57.0687 48.649 47.2658 36.5566 47.2658C24.4641 47.2658 14.6613 57.0687 14.6613 69.1611C14.6613 81.2535 24.4641 91.0564 36.5566 91.0564C48.649 91.0564 58.4518 81.2535 58.4518 69.1611ZM60.9535 69.1611C60.9535 82.6355 50.031 93.5581 36.5566 93.5581C23.0821 93.5581 12.1596 82.6355 12.1596 69.1611C12.1596 55.6867 23.0821 44.7641 36.5566 44.7641C50.031 44.7641 60.9535 55.6867 60.9535 69.1611Z"
+          fill="white" />
+        <path
+          d="M14.4181 30.7839C14.4184 20.7647 22.5421 12.6406 32.5614 12.6406C39.5781 12.6414 45.6489 16.6358 48.6658 22.4651C53.1129 16.5015 60.2282 12.6416 68.2395 12.6406C79.2676 12.6406 88.5823 19.962 91.6024 30.006C94.8388 27.0037 99.161 25.157 103.924 25.1565C113.942 25.1565 122.066 33.2752 122.067 43.2935C122.067 50.85 117.444 57.3226 110.875 60.0504C117.001 66.1651 120.794 74.6197 120.794 83.9592C120.793 102.616 105.667 117.736 87.0102 117.736C79.2671 117.736 72.1363 115.129 66.439 110.748C64.1975 118.223 57.2726 123.671 49.0673 123.671C39.0492 123.671 30.9255 115.552 30.924 105.534C30.924 102.242 31.8123 99.1557 33.3456 96.4938C19.657 94.9031 9.02905 83.2751 9.02905 69.1597C9.02956 59.2167 14.3023 50.5018 22.2037 45.665C17.5021 42.387 14.4181 36.9502 14.4181 30.7839ZM56.3571 83.9586C56.3572 87.2377 56.8782 90.395 57.8315 93.357C55.3641 91.5778 52.3427 90.518 49.0681 90.518C48.8048 90.518 48.5431 90.5393 48.2831 90.5527C51.4869 88.7928 54.2473 86.334 56.3698 83.382C56.3663 83.5738 56.3571 83.766 56.3571 83.9586ZM55.9997 54.4229C59.4617 56.8657 63.6832 58.3087 68.2425 58.3093C68.9679 58.3093 69.6846 58.2706 70.3913 58.1997C66.562 60.6752 63.3182 63.9792 60.9182 67.861C60.6538 62.8255 58.8633 58.195 55.9997 54.4229ZM89.0114 41.6059C88.9493 42.1601 88.9124 42.7253 88.9123 43.296C88.9123 47.4696 90.6165 51.244 93.3653 53.965C91.812 53.6375 90.2152 53.4264 88.5848 53.3439L87.0099 53.3059C85.0457 53.3059 83.125 53.4927 81.2635 53.8458C85.1283 50.847 87.9292 46.5517 89.0114 41.6059ZM47.1664 34.1905C47.0416 35.1223 46.9735 36.0743 46.9734 37.0402C46.9734 41.7002 48.477 46.0065 51.0184 49.5107C47.3085 46.7759 42.7966 45.065 37.9003 44.7992C42.517 43.0389 46.0309 39.08 47.1664 34.1905ZM17.6239 32.321C18.3146 39.1155 23.5383 44.5496 30.2213 45.596C19.8191 48.3853 12.1602 57.8786 12.1596 69.1611C12.1596 82.6355 23.0821 93.5581 36.5566 93.5581C37.8832 93.558 39.1845 93.4417 40.4536 93.2378C36.5852 95.9535 34.0548 100.446 34.0548 105.531L34.1298 107.065C34.8465 114.131 40.465 119.746 47.5303 120.465L49.0681 120.545C57.3601 120.545 64.0814 113.823 64.0814 105.531C64.0814 105.088 64.0487 104.65 64.0111 104.217C69.3043 110.221 76.9084 114.143 85.4355 114.574L87.0099 114.611C103.411 114.611 116.806 101.731 117.625 85.5338L117.663 83.9586C117.663 73.2169 112.137 63.7674 103.773 58.2938C103.823 58.2943 103.875 58.3093 103.926 58.3093C112.218 58.3093 118.939 51.588 118.939 43.296C118.939 35.0041 112.218 28.2827 103.926 28.2827C96.8101 28.2836 90.8593 33.236 89.3126 39.8807C89.4367 38.951 89.5116 38.0038 89.5116 37.0402C89.5116 25.2933 79.9894 15.7712 68.2425 15.7712C58.0655 15.7726 49.5579 22.9216 47.4675 32.4715C47.5295 31.9173 47.5725 31.3552 47.5725 30.7844C47.5723 23.0102 41.6639 16.6141 34.0922 15.8464L32.5592 15.7712C24.2673 15.7712 17.546 22.4925 17.546 30.7844L17.6239 32.321Z"
+          fill="white" />
+      </g>
+      <defs>
+        <filter id="filter0_di_53_246" x="-1.43051e-05" y="-6.8903e-05" width="131.096" height="129.089"
+          filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha" />
+          <feOffset dy="-3.61163" />
+          <feGaussianBlur stdDeviation="4.51453" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.06 0" />
+          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_53_246" />
+          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_53_246" result="shape" />
+          <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha" />
+          <feOffset dy="0.973787" />
+          <feGaussianBlur stdDeviation="0.73034" />
+          <feComposite in2="hardAlpha" operator="arithmetic" k2="-1" k3="1" />
+          <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.4 0" />
+          <feBlend mode="normal" in2="shape" result="effect2_innerShadow_53_246" />
+        </filter>
+      </defs>
+    </svg>
+    <span class="logo-text">pigment</span>
+  </header>
+
+  <!-- ── Main ───────────────────────────────────────────── -->
+  <main class="content">
+    <p class="subtitle">Copy our prompt &rarr; paste into Claude or ChatGPT</p>
+
+    <div class="prompt-card">
+      <p class="prompt-text" id="promptText">generate a design token json with two top-level keys &mdash;
+        &ldquo;primitives&rdquo; and &ldquo;semantics&rdquo;. primitives hold raw hex values nested by color name and
+        scale (e.g. &ldquo;gray&rdquo;: { &ldquo;10&rdquo;: &ldquo;#f9f9fb&rdquo;, &ldquo;50&rdquo;:
+        &ldquo;#9090a0&rdquo; }). semantics are usage-based aliases referencing primitives using the
+        {primitive.colorName.scale} syntax (e.g. &ldquo;brand&rdquo;: { &ldquo;primary&rdquo;:
+        &ldquo;{primitive.purple.500}&rdquo; }). group semantics by usage: brand, neutral (bg / border / text), status,
+        and surface. if i&rsquo;ve given only a single hex value for a color, generate a full tonal scale for it from 10
+        to 950 &mdash; treat the given hex as the 500 base, derive lighter shades going down and darker shades going up.
+        use those generated stops in the primitives and reference them in semantics. my colors are listed below.
+        generate the complete token file. output json only, no explanation.<br><br>My colours are &mdash; [List down
+        your colors]</p>
+
+      <button class="copy-btn" id="copyBtn" aria-label="Copy prompt to clipboard">
+        <!-- Copy icon -->
+        <svg class="icon-copy" width="16" height="16" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true">
+          <path d="M7.875 7.875H10.125V1.875H4.125V4.125" stroke="#FEFEFF" stroke-linecap="round"
+            stroke-linejoin="round" />
+          <path d="M7.875 4.125H1.875V10.125H7.875V4.125Z" stroke="#FEFEFF" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        <!-- Checkmark icon (shown after copy) -->
+        <svg class="icon-check" width="16" height="16" viewBox="0 0 12 12" fill="none"
+          xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M2.25 6.375L4.875 9L9.75 3" stroke="#FEFEFF" stroke-width="1.2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        <span class="copy-btn-label" id="copyLabel">Copy</span>
+      </button>
+    </div>
+  </main>
+
+  <!-- ── Footer ─────────────────────────────────────────── -->
+  <footer class="footer">
+    <span class="footer-text">made with love by</span>
+    <a class="footer-brand" href="https://instagram.com/lensofswastik" target="_blank" rel="noopener">
+      <img class="eye-logo" src="assets/lensofswastik.png" alt="lensofswastik">
+      <span class="footer-handle">@lensofswastik</span>
+    </a>
+  </footer>
+
+  <script>
+    (function () {
+      var btn = document.getElementById('copyBtn');
+      var label = document.getElementById('copyLabel');
+      var promptEl = document.getElementById('promptText');
+      var resetTmr = null;
+
+      // The actual prompt text to copy — decoded from HTML entities
+      var RAW_PROMPT =
+        'generate a design token json with two top-level keys - "primitives" and "semantics". ' +
+        'primitives hold raw hex values nested by color name and scale ' +
+        '(e.g. "gray": { "10": "#f9f9fb", "50": "#9090a0" }). ' +
+        'semantics are usage-based aliases referencing primitives using the {primitive.colorName.scale} syntax ' +
+        '(e.g. "brand": { "primary": "{primitive.purple.500}" }). ' +
+        'group semantics by usage: brand, neutral (bg / border / text), status, and surface. ' +
+        'if i\'ve given only a single hex value for a color, generate a full tonal scale for it from 10 to 950 - ' +
+        'treat the given hex as the 500 base, derive lighter shades going down and darker shades going up. ' +
+        'use those generated stops in the primitives and reference them in semantics. ' +
+        'my colors are listed below. generate the complete token file. output json only, no explanation.\n\n' +
+        'My colours are —  [List down your colors]';
+
+      function markDone() {
+        btn.classList.add('done');
+        label.textContent = 'Copied!';
+        if (resetTmr) clearTimeout(resetTmr);
+        resetTmr = setTimeout(function () {
+          btn.classList.remove('done');
+          label.textContent = 'Copy';
+        }, 2000);
+      }
+
+      function fallbackCopy() {
+        var ta = document.createElement('textarea');
+        ta.value = RAW_PROMPT;
+        ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        try { if (document.execCommand('copy')) markDone(); } catch (e) { }
+        document.body.removeChild(ta);
+      }
+
+      btn.addEventListener('click', function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(RAW_PROMPT).then(markDone).catch(fallbackCopy);
+        } else {
+          fallbackCopy();
+        }
+      });
+    })();
+  </script>
+
+</body>
+
+</html>

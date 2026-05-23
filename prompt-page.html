@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pigment — Generate Token JSON</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #E8E9ED;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 52px 20px 64px;
+    }
+
+    .header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .logo {
+      width: 76px;
+      height: 76px;
+      object-fit: contain;
+    }
+
+    .brand {
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.4px;
+      color: #111;
+    }
+
+    .subtitle {
+      font-size: 13.5px;
+      color: #999;
+      margin-top: -2px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 700px;
+      padding: 32px 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .prompt-text {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.85;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #F0F0F5;
+    }
+
+    .colors-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #8B5CF6;
+      margin-bottom: 8px;
+    }
+
+    .helper {
+      font-size: 12px;
+      color: #AAA;
+      margin-bottom: 10px;
+    }
+
+    textarea {
+      width: 100%;
+      background: #F7F7FA;
+      border: 1.5px solid #EBEBF2;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+      font-size: 13px;
+      line-height: 1.65;
+      color: #333;
+      resize: vertical;
+      min-height: 108px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    textarea:focus {
+      border-color: #8B5CF6;
+    }
+
+    textarea::placeholder {
+      color: #C4C4D0;
+    }
+
+    .copy-btn {
+      width: 100%;
+      padding: 13px 20px;
+      background: #111;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.1px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.08s;
+    }
+
+    .copy-btn:hover {
+      background: #222;
+    }
+
+    .copy-btn:active {
+      transform: scale(0.99);
+    }
+
+    .copy-btn.done {
+      background: #15803D;
+    }
+
+    .footer {
+      margin-top: 28px;
+      font-size: 13px;
+      color: #AAA;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <img class="logo" src="icon.png" alt="Pigment">
+    <div class="brand">pigment</div>
+    <div class="subtitle">Copy our prompt &rarr; paste into Claude or ChatGPT</div>
+  </div>
+
+  <div class="card">
+
+    <div class="prompt-text" id="promptText">generate a design token json with two top-level keys — "primitives" and
+      "semantics". primitives hold raw hex values nested by color name and scale (e.g. "gray": { "10": "#f9f9fb", "50":
+      "#9090a0" }). semantics are usage-based aliases referencing primitives using the {primitive.colorName.scale}
+      syntax (e.g. "brand": { "primary": "{primitive.purple.500}" }). group semantics by usage: brand, neutral (bg /
+      border / text), status, and surface.
+
+      if i've given only a single hex value for a color, generate a full tonal scale for it from 10 to 950 — treat the
+      given hex as the 500 base, derive lighter shades going down and darker shades going up. use those generated stops
+      in the primitives and reference them in semantics.
+
+      my colors are listed below. generate the complete token file. output json only, no explanation.</div>
+
+    <hr class="divider">
+
+    <div>
+      <div class="colors-label">My colors</div>
+      <div class="helper">One color or a full scale — the AI handles the rest.</div>
+      <textarea id="colorsInput"
+        placeholder="- Primary: #7C4EF0&#10;- Gray: #9090A0&#10;- Success: #22C55E&#10;- Error: #EF4444&#10;- Warning: #F97316"></textarea>
+    </div>
+
+    <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none">
+        <rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5" />
+        <path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2H3.5A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor"
+          stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+      Copy prompt
+    </button>
+
+  </div>
+
+  <div class="footer">made with love by @lensofswastik</div>
+
+  <script>
+    function copyPrompt() {
+      var colors = document.getElementById('colorsInput').value.trim();
+      var colorBlock = colors ||
+        '- Primary: #7C4EF0\n- Gray: #9090A0\n- Success: #22C55E\n- Error: #EF4444\n- Warning: #F97316';
+
+      var full = 'generate a design token json with two top-level keys — "primitives" and "semantics". primitives hold raw hex values nested by color name and scale (e.g. "gray": { "10": "#f9f9fb", "50": "#9090a0" }). semantics are usage-based aliases referencing primitives using the {primitive.colorName.scale} syntax (e.g. "brand": { "primary": "{primitive.purple.500}" }). group semantics by usage: brand, neutral (bg / border / text), status, and surface.\n\nif i\'ve given only a single hex value for a color, generate a full tonal scale for it from 10 to 950 — treat the given hex as the 500 base, derive lighter shades going down and darker shades going up. use those generated stops in the primitives and reference them in semantics.\n\nmy colors:\n' + colorBlock + '\n\ngenerate the complete token file. output json only, no explanation.';
+
+      navigator.clipboard.writeText(full).then(function () {
+        var btn = document.getElementById('copyBtn');
+        btn.classList.add('done');
+        btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><path d="M3 8l3.5 3.5L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copied!';
+        setTimeout(function () {
+          btn.classList.remove('done');
+          btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 16 16" fill="none"><rect x="5" y="5" width="9" height="9" rx="1.5" stroke="currentColor" stroke-width="1.5"/><path d="M11 5V3.5A1.5 1.5 0 0 0 9.5 2H3.5A1.5 1.5 0 0 0 2 3.5v6A1.5 1.5 0 0 0 3.5 11H5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Copy prompt';
+        }, 2500);
+      });
+    }
+  </script>
+</body>
+
+</html>
