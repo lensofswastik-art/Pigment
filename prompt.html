@@ -178,6 +178,107 @@
       display: block;
     }
 
+    /* ── Upload section ──────────────────────────────────── */
+    .upload-section {
+      width: 100%;
+      max-width: 1054px;
+      margin-top: 19px;
+    }
+
+    .upload-zone {
+      position: relative;
+      width: 100%;
+      background: #FEFEFF;
+      border: 1px dashed #E9ECEF;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease;
+      user-select: none;
+    }
+
+    .upload-zone:hover,
+    .upload-zone.drag-over {
+      background: #f5f6f8;
+      border-color: #adb5bd;
+    }
+
+    /* Hidden file input — triggered by browse button */
+    .upload-zone input[type="file"] {
+      display: none;
+    }
+
+    .upload-icon {
+      display: block;
+      width: 72px;
+      height: auto;
+      flex-shrink: 0;
+      pointer-events: none;
+    }
+
+    .upload-title {
+      font-size: 18px;
+      font-weight: 400;
+      color: #9198A6;
+      letter-spacing: -0.03em;
+      text-align: center;
+      line-height: 1.3;
+      pointer-events: none;
+    }
+
+    .upload-sub {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: -0.02em;
+      text-align: center;
+      line-height: 1.4;
+      pointer-events: none;
+    }
+
+    .browse-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 52px;
+      padding: 0 40px;
+      background: linear-gradient(180deg, #212529 0%, #14100C 100%);
+      color: #FEFCFB;
+      font-family: 'Geist', -apple-system, sans-serif;
+      font-size: 18px;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow:
+        0px 2px 4px -1px rgba(12, 10, 8, 0.40),
+        0px 0px 0px 1px rgba(12, 10, 8, 0.10),
+        inset 0px -1px 1.2px 0.35px #0C0A09,
+        inset 0px 0.5px 1px 0px rgba(254, 252, 251, 0.20);
+      transition: background 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .browse-btn:hover {
+      background:
+        linear-gradient(rgba(255,255,255,0.08), rgba(255,255,255,0.08)),
+        linear-gradient(180deg, #212529 0%, #14100C 100%);
+    }
+
+    .browse-btn:focus-visible {
+      outline: 2px solid rgba(33,37,41,0.4);
+      outline-offset: 3px;
+    }
+
+    /* ── Responsive — Tablet ──────────────────────────────── */
+    /* (upload overrides inside existing tablet block below)  */
+
     /* ── Footer ───────────────────────────────────────────── */
     .footer {
       margin-top: 60px;
@@ -257,6 +358,15 @@
         width: 14px;
         height: 14px;
       }
+
+      .upload-zone {
+        padding: 20px;
+        gap: 14px;
+      }
+
+      .upload-title { font-size: 16px; }
+      .upload-sub   { font-size: 14px; }
+      .browse-btn   { font-size: 16px; height: 46px; padding: 0 32px; }
     }
 
     /* ── Responsive — Mobile ──────────────────────────────── */
@@ -319,6 +429,16 @@
       .footer-handle {
         font-size: 14px;
       }
+
+      .upload-zone {
+        padding: 20px 16px;
+        gap: 12px;
+      }
+
+      .upload-icon  { width: 56px; }
+      .upload-title { font-size: 15px; }
+      .upload-sub   { font-size: 13px; }
+      .browse-btn   { font-size: 15px; height: 44px; padding: 0 28px; }
     }
   </style>
 </head>
@@ -432,6 +552,31 @@
     </div>
   </main>
 
+  <!-- ── Upload ─────────────────────────────────────────── -->
+  <section class="upload-section">
+    <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Drop or upload your tokens.json file">
+      <input type="file" id="fileInput" accept=".json" aria-label="Upload tokens.json">
+
+      <!-- Folder icon — placeholder, states to be wired later -->
+      <svg class="folder-icon" id="folderIcon" viewBox="0 0 112 90" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <!-- Back panel -->
+        <rect x="0" y="22" width="54" height="68" rx="8" fill="#dde1e6"/>
+        <!-- Tab -->
+        <path d="M0 30 C0 25.6 3.6 22 8 22 L54 22 L54 35 Q45 28 36 28 L8 28 C3.6 28 0 24.4 0 20 Z" fill="#d0d4da"/>
+        <!-- Tab rounded top -->
+        <path d="M4 22 Q4 14 14 14 L36 14 Q46 14 50 22 Z" fill="#dde1e6"/>
+        <!-- Front panel -->
+        <rect x="6" y="32" width="100" height="58" rx="9" fill="#e8ebee"/>
+        <!-- Front panel inner highlight -->
+        <rect x="6" y="32" width="100" height="10" rx="9" fill="#edf0f3" opacity="0.7"/>
+        <!-- Bottom shadow line -->
+        <rect x="6" y="83" width="100" height="7" rx="7" fill="#d4d8dd"/>
+      </svg>
+
+      <p class="upload-label">Drop or upload your tokens.json here</p>
+    </div>
+  </section>
+
   <!-- ── Footer ─────────────────────────────────────────── -->
   <footer class="footer">
     <span class="footer-text">made with love by</span>
@@ -490,6 +635,55 @@
           fallbackCopy();
         }
       });
+    })();
+
+    // ── Upload zone ────────────────────────────────────────
+    (function () {
+      var zone      = document.getElementById('uploadZone');
+      var fileInput = document.getElementById('fileInput');
+      var dragCount = 0; // counter handles child-element drag enter/leave noise
+
+      function setDragging(on) {
+        zone.classList.toggle('drag-over', on);
+      }
+
+      zone.addEventListener('dragenter', function (e) {
+        e.preventDefault();
+        dragCount++;
+        setDragging(true);
+      });
+
+      zone.addEventListener('dragleave', function () {
+        dragCount--;
+        if (dragCount <= 0) { dragCount = 0; setDragging(false); }
+      });
+
+      zone.addEventListener('dragover', function (e) {
+        e.preventDefault(); // allow drop
+      });
+
+      zone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dragCount = 0;
+        setDragging(false);
+        var file = e.dataTransfer.files && e.dataTransfer.files[0];
+        if (file) handleFile(file);
+      });
+
+      fileInput.addEventListener('change', function () {
+        var file = fileInput.files && fileInput.files[0];
+        if (file) handleFile(file);
+      });
+
+      // Keyboard activation
+      zone.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+      });
+
+      function handleFile(file) {
+        // Placeholder — wire to your token pipeline here
+        console.log('File received:', file.name);
+      }
     })();
   </script>
 
