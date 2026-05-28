@@ -10,7 +10,7 @@ const UI_HTML = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300;400;500&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@300;400;500;600&family=Geist:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -286,21 +286,31 @@ const UI_HTML = `<!DOCTYPE html>
   }
   .btn-primary:focus { outline: none; }
 
-  /* ── Screen 2 — Alpha Builder ─────────────────────── */
+  /* ── Screen 2 — Token Map ─────────────────────────── */
 
-  /* Stats card */
-  .stats-card {
-    margin: 16px 18px 0; background: var(--surface);
-    border: 1px solid var(--border2); border-radius: var(--radius);
-    display: flex; flex-shrink: 0;
+  /* Stats banner cards */
+  .stats-row {
+    display: flex; gap: 10px;
+    padding: 20px; position: relative; z-index: 1;
   }
-  .stat-col {
-    flex: 1; padding: 14px 0; text-align: center;
-    border-right: 1px solid var(--border);
+  .stat-card {
+    flex: 1; height: 110px;
+    background: #FEFEFF; border: 0.5px solid #CED4DA;
+    border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; overflow: hidden;
   }
-  .stat-col:last-child { border-right: none; }
-  .stat-num { font-size: 26px; font-weight: 800; color: var(--purple); line-height: 1; margin-bottom: 5px; }
-  .stat-label { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+  .stat-num {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    font-size: 40px; font-weight: 600;
+    letter-spacing: -0.04em; line-height: 1;
+    color: #1E1E1E;
+  }
+  .stat-label {
+    font-family: 'Geist', -apple-system, sans-serif;
+    font-size: 12px; font-weight: 400;
+    letter-spacing: -0.03em; color: #6C757D;
+  }
 
   /* Tab switcher */
   .tab-row {
@@ -930,10 +940,21 @@ const UI_HTML = `<!DOCTYPE html>
     <span class="hdr-name">pigment</span>
   </div>
 
-  <div class="stats-card">
-    <div class="stat-col"><div id="statPrim" class="stat-num">0</div><div class="stat-label">Primitives</div></div>
-    <div class="stat-col"><div id="statSem"  class="stat-num">0</div><div class="stat-label">Semantics</div></div>
-    <div class="stat-col"><div id="statAlpha" class="stat-num">0</div><div class="stat-label">Alpha Stops</div></div>
+  <div class="banner" style="border-bottom:1px solid #E9ECEF;">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div id="statPrim" class="stat-num">0</div>
+        <div class="stat-label">Primitives</div>
+      </div>
+      <div class="stat-card">
+        <div id="statSem" class="stat-num">0</div>
+        <div class="stat-label">Semantics</div>
+      </div>
+      <div class="stat-card">
+        <div id="statAlpha" class="stat-num">0</div>
+        <div class="stat-label">Alpha Stops</div>
+      </div>
+    </div>
   </div>
 
   <div class="tab-row">
