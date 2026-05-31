@@ -1,8 +1,16 @@
 {
   "name": "Pigment",
-  "id": "pigment-color-system",
+  "id": "1642516696208396102",
   "api": "1.0.0",
   "main": "code.js",
-  "editorType": ["figma"],
-  "documentAccess": "dynamic-page"
+  "editorType": [
+    "figma",
+    "figjam"
+  ],
+  "documentAccess": "dynamic-page",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://pigment-prompt.vercel.app/"
+    ]
+  }
 }
