@@ -4,13 +4,12 @@
   "api": "1.0.0",
   "main": "code.js",
   "editorType": [
-    "figma",
-    "figjam"
+    "figma"
   ],
   "documentAccess": "dynamic-page",
   "networkAccess": {
     "allowedDomains": [
-      "https://pigment-prompt.vercel.app/"
+      "none"
     ]
   }
 }
